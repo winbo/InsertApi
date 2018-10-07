@@ -1,0 +1,15 @@
+[
+    {
+        "caption": "insert api",
+        "command": "insert_api",
+    },
+    {
+        "caption": "insert api reload",
+        "command": "insert_api_reload",
+    },
+    {
+        "caption": "insert api test",
+        "command": "insert_api_test",
+    },
+
+]

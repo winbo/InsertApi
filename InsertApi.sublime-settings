@@ -1,0 +1,9 @@
+{
+	"c_h_file_dirs": [
+		/*
+		 * 0 column: api name 		
+		 * 1 column: directory of the c header files
+		 */
+		["alsa", "/usr/include/alsa"],
+	]
+}

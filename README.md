@@ -1,2 +1,2 @@
 # InsertApi
-sublime plugin for insert c language api
+This is a sublime-text plugin for inserting c language api

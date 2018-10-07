@@ -1,0 +1,33 @@
+[
+    {
+        "id": "preferences",
+        "children": [
+            {
+                "caption": "Package Settings",
+                "mnemonic": "P",
+                "id": "package-settings",
+                "children": [
+                    {
+                        "caption": "InsertApi",
+                        "children": [
+                            {
+                                "caption": "Settings",
+                                "command": "edit_settings",
+                                "args": {
+                                    "base_file": "${packages}/InsertApi/InsertApi.sublime-settings",
+                                    "default": "// Settings in here override those in \"InsertApi/InsertApi.sublime-settings\",\n\n{\n\t$0\n}\n"
+                                }
+                            }, {
+                                "caption": "Key Bindings",
+                                "command": "edit_settings",
+                                "args": {
+                                    "base_file": "${packages}/InsertApi/Default (${platform}).sublime-keymap"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
