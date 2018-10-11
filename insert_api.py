@@ -26,7 +26,7 @@ def ListAndParseHeaderFiles(rootdir, location):
 	files = ListHeaderFiles(rootdir, location)
 	for file in files:
 		# print("ParseFile: %s" % file[0])
-		ParseFile(file[0], file[1])
+		ParseHeaderFile(file[0], file[1])
 	print("parse done - [%s]" % rootdir)
 
 def ListHeaderFiles(rootdir, location):
@@ -43,40 +43,38 @@ def ListHeaderFiles(rootdir, location):
 
 	return files
 
-def ParseFile(file, location):
+def ParseHeaderFile(file, location):
 	try:
 		f = open(file, 'r')
 		content = f.read()
-		if not content:
-			return
-	except Exeption as e:
-		print("Cannot Parse file %s" % file)
+	except Exception as e:
+		print("Cannot Parse: " + file)
 		return
 	finally:
-		f.close()
-	try:
-		# remove all /* */ comments first
-		content = re.sub(r'/\*([^\*]|(\*)*[^\*/])*(\*)*\*/', '', content, 0, re.M|re.S)
-		# remove all // comments
-		content = re.sub(r'//[^\n]*', '', content, 0, re.M|re.S)
-		# turn macro from multiple lines into a single line
-		content = re.sub(r'\s*\\\s*\n\s*', ' ', content, 0, re.M|re.S)
-		# remove all {} content
-		content = RemoveBraces(content)
+		f.close()	
 
-		# match function
-		p1 = re.compile(r'(^[\w+\s*]*\s+[\*&]*)\s*(\w+)\s*(\([^;]*\))(\s*;)', re.M|re.S)
-		# match macro
-		p2 = re.compile(r'(^\s*#\s*define\s+)(\w+)\s*(\([^\(\)]*\))', re.M|re.S)
-
-		for m in re.finditer(p1, content):
-			AppendItems(m, location)
-
-		for m in re.finditer(p2, content):
-			AppendItems(m, location)
-	except UnicodeDecodeError as e:
-		print("Cannot Parse file %s" % file)
+	if not content:
 		return
+
+	# remove all /* */ comments first
+	content = re.sub(r'/\*([^\*]|(\*)*[^\*/])*(\*)*\*/', '', content, 0, re.M|re.S)
+	# remove all // comments
+	content = re.sub(r'//[^\n]*', '', content, 0, re.M|re.S)
+	# turn macro from multiple lines into a single line
+	content = re.sub(r'\s*\\\s*\n\s*', ' ', content, 0, re.M|re.S)
+	# remove all {} content
+	content = RemoveBraces(content)
+
+	# match function
+	p1 = re.compile(r'(^[\w+\s*]*\s+[\*&]*)\s*(\w+)\s*(\([^;]*\))(\s*;)', re.M|re.S)
+	# match macro
+	p2 = re.compile(r'(^\s*#\s*define\s+)(\w+)\s*(\([^\(\)]*\))', re.M|re.S)
+
+	for m in re.finditer(p1, content):
+		AppendItems(m, location)
+
+	for m in re.finditer(p2, content):
+		AppendItems(m, location)
 
 def RemoveBraces(content):
 	newcontent = ""
