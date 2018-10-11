@@ -25,7 +25,7 @@ def ListAndParseHeaderFiles(rootdir, location):
     print("ListAndParseHeaderFiles")
     files = ListHeaderFiles(rootdir, location)
     for file in files:
-        # print("ParseFile: %s" % file[0])
+        print("(%d)ParseFile: %s" % (len(snips), file[0]))
         ParseHeaderFile(file[0], file[1])
     print("parse done - [%s]" % rootdir)
 
@@ -38,8 +38,6 @@ def ListHeaderFiles(rootdir, location):
             files.extend(ListHeaderFiles(path, location + list[i] + "/"))
         if os.path.isfile(path) and re.search(r'\.[h|H]$', path):
             files.append([path, location + list[i]])
-        # else:
-        #     log("not .h file")
 
     return files
 
@@ -54,6 +52,7 @@ def ParseHeaderFile(file, location):
         f.close()    
 
     if not content:
+        print("no content: " + file)
         return
 
     # remove all /* */ comments first
@@ -62,13 +61,15 @@ def ParseHeaderFile(file, location):
     content = re.sub(r'//[^\n]*', '', content, 0, re.M|re.S)
     # turn macro from multiple lines into a single line
     content = re.sub(r'\s*\\\s*\n\s*', ' ', content, 0, re.M|re.S)
+    # remove extern "C" { 
+    content = re.sub(r'\s*extern\s+\"C\"\s+{', '', content, 0, re.M|re.S)
     # remove all {} content
     content = RemoveBraces(content)
 
     # match function
     p1 = re.compile(r'(^[\w+\s*]*\s+[\*&]*)\s*(\w+)\s*(\([^;]*\))(\s*;)', re.M|re.S)
     # match macro
-    p2 = re.compile(r'(^\s*#\s*define\s+)(\w+)\s*(\([^\(\)]*\))', re.M|re.S)
+    p2 = re.compile(r'^\s*(#\s*define)\s+(\w+)(\([^\)]*\))', re.M|re.S)
 
     for m in re.finditer(p1, content):
         AppendItems(m, location)
@@ -90,11 +91,13 @@ def RemoveBraces(content):
                 newcontent += content[start:end] + ';'
             brace += 1
         elif content[i] == '}':
-            brace -= 1
-            start = i+1
+            if brace > 0:
+                brace -= 1
+                start = i+1
         else:
             continue
 
+    newcontent += content[start:] + ';'
     return newcontent
 
 def AppendItems(m, location):

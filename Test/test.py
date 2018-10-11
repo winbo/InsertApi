@@ -1,5 +1,5 @@
 import sublime, sublime_plugin
-from ..insert_api import ParseFile
+from ..insert_api import ParseHeaderFile
 from ..insert_api import apis
 from ..insert_api import snips
 
@@ -14,7 +14,7 @@ class InsertApiTestCommand(sublime_plugin.TextCommand):
         rfile = sublime.packages_path() + "/InsertApi/Test/c.h.expect"
         apis.clear()
         snips.clear()
-        ParseFile(hfile, "[Test] c.h")
+        ParseHeaderFile(hfile, "[Test] c.h")
 
         with open(rfile, 'r') as f:
             while True:

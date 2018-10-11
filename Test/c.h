@@ -1,3 +1,11 @@
+#ifndef C_H
+#define C_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 const void *
 memcpy (
 	void *dst, 
@@ -18,7 +26,7 @@ int   qsort( void *array, size_t item_size, size_t item_count, int (* compare)(v
 
 #define 	min(a, b)   
 
-#define  PI    3.1415926
+#define  PI    (3.1415926)
 
 #define tty_locked()		(current == __big_tty_mutex_owner)
 extern int send_indication(int id, const char *fmt, ...);
@@ -52,3 +60,11 @@ int at_register_handle(const char *prefix, int length);
 /**
  * int main(int argc, char const *argv[])
  */
+
+/** } */
+ 
+#ifdef __cplusplus
+}
+#endif
+
+#endif
