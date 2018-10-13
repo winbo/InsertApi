@@ -3,6 +3,7 @@ import sublime, sublime_plugin, os, re, threading
 mutex = threading.Lock()
 apis  = []
 snips = []
+settings = {}
 debug = 0
 
 def plugin_loaded():
@@ -12,20 +13,19 @@ def plugin_loaded():
     t = threading.Thread(target = WorkThread)
     t.start()
 
-def WorkThread():
-    print("WorkThread")
+def WorkThread():    
     insert_api_settings = sublime.load_settings("InsertApi.sublime-settings")
+    settings['show_macro_function'] = insert_api_settings.get("show_macro_function", False)
     dir_list = insert_api_settings.get("c_h_file_dirs")
     for i in dir_list:
-        print("[%s]:%s" % (i[0], i[1]))
+        log("[%s]:%s" % (i[0], i[1]))
         ListAndParseHeaderFiles(i[1], "[%s] " % i[0])
     return
 
 def ListAndParseHeaderFiles(rootdir, location):
-    print("ListAndParseHeaderFiles")
     files = ListHeaderFiles(rootdir, location)
     for file in files:
-        print("(%d)ParseFile: %s" % (len(snips), file[0]))
+        log("(%d)ParseFile: %s" % (len(snips), file[0]))
         ParseHeaderFile(file[0], file[1])
     print("parse done - [%s]" % rootdir)
 
@@ -46,13 +46,13 @@ def ParseHeaderFile(file, location):
         f = open(file, 'r')
         content = f.read()
     except Exception as e:
-        print("Cannot Parse: " + file)
+        log("Cannot Parse: " + file)
         return
     finally:
         f.close()    
 
     if not content:
-        print("no content: " + file)
+        log("no content: " + file)
         return
 
     # remove all /* */ comments first
@@ -66,16 +66,22 @@ def ParseHeaderFile(file, location):
     # remove all {} content
     content = RemoveBraces(content)
 
+    # if not show_macro_function:
+    #     # remove all macro 
+    #     log("remove all define")
+    #     content = re.sub(r'^\s*#\s*define\s+.*$', '', content, 0)
+
     # match function
     p1 = re.compile(r'(^[\w+\s*]*\s+[\*&]*)\s*(\w+)\s*(\([^;]*\))(\s*;)', re.M|re.S)
-    # match macro
-    p2 = re.compile(r'^\s*(#\s*define)\s+(\w+)(\([^\)]*\))', re.M|re.S)
 
     for m in re.finditer(p1, content):
         AppendItems(m, location)
 
-    for m in re.finditer(p2, content):
-        AppendItems(m, location)
+    # match macro funtion
+    if settings['show_macro_function']:
+        p2 = re.compile(r'^\s*(#\s*define)\s+(\w+)(\([^\)]*\))', re.M|re.S)
+        for m in re.finditer(p2, content):
+            AppendItems(m, location)
 
 def RemoveBraces(content):
     newcontent = ""

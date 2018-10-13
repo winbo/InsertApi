@@ -1,4 +1,6 @@
 {
+    "show_macro_function": false,
+
     "c_h_file_dirs": [
         /*
          * 0 column: api name         

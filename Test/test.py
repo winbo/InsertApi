@@ -2,12 +2,14 @@ import sublime, sublime_plugin
 from ..insert_api import ParseHeaderFile
 from ..insert_api import apis
 from ..insert_api import snips
+from ..insert_api import settings
 
 class InsertApiTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        print("start InsertApi Testing...")
+        print("start InsertApi Testing...")        
         expect_apis  = []
         expect_snips = []
+        settings['show_macro_function'] = True
         succeeded = True
 
         hfile = sublime.packages_path() + "/InsertApi/Test/c.h"
