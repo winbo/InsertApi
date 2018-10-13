@@ -31,7 +31,11 @@ def ListAndParseHeaderFiles(rootdir, location):
 
 def ListHeaderFiles(rootdir, location):
     files = []
-    list = os.listdir(rootdir) 
+    try:
+        list = os.listdir(rootdir) 
+    except Exception as e:
+        return files
+        
     for i in range(0, len(list)):
         path = os.path.join(rootdir, list[i])
         if os.path.isdir(path):
