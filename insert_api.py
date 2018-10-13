@@ -5,18 +5,19 @@ apis  = []
 snips = []
 settings = {}
 debug = 0
+verbose = 0
 
 def plugin_loaded():
     print("InsertApi loading...")
     apis.clear()
     snips.clear()
-    t = threading.Thread(target = WorkThread)
-    t.start()
-
-def WorkThread():    
     insert_api_settings = sublime.load_settings("InsertApi.sublime-settings")
     settings['show_macro_function'] = insert_api_settings.get("show_macro_function", False)
     dir_list = insert_api_settings.get("c_h_file_dirs")
+    t = threading.Thread(target = WorkThread, args=(dir_list,))
+    t.start()
+
+def WorkThread(dir_list):    
     for i in dir_list:
         log("[%s]:%s" % (i[0], i[1]))
         ListAndParseHeaderFiles(i[1], "[%s] " % i[0])
@@ -25,8 +26,8 @@ def WorkThread():
 def ListAndParseHeaderFiles(rootdir, location):
     files = ListHeaderFiles(rootdir, location)
     for file in files:
-        log("(%d)ParseFile: %s" % (len(snips), file[0]))
         ParseHeaderFile(file[0], file[1])
+        log("(%d)ParseFile: %s" % (len(snips), file[0]))
     print("parse done - [%s]" % rootdir)
 
 def ListHeaderFiles(rootdir, location):
@@ -130,8 +131,8 @@ def AppendItems(m, location):
     apis.append([api, location])
     snips.append(snip)
     mutex.release()
-    log(api)
-    log(snip)
+    vlog(api)
+    vlog(snip)
 
 def GetParamItems(params):
     parenthesis = 0 
@@ -158,6 +159,10 @@ def GetParamItems(params):
 
 def log(message):
     if debug:
+        print(message)
+
+def vlog(message):
+    if verbose:
         print(message)
 
 
